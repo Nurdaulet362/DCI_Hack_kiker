@@ -18,6 +18,7 @@
 <dialog id="configDialog"><div class="dialog-heading"><h2>Подключение AI</h2><button data-close="configDialog" aria-label="Закрыть">×</button></div><div id="configInfo"></div><p>Откройте локальный <code>.env</code> в папке проекта, заполните настройки провайдера и перезапустите сервер:</p><pre>AI_PROVIDER=openai_compatible
 AI_BASE_URL=https://generativelanguage.googleapis.com/v1beta/openai
 AI_MODEL=gemini-3.8-flash
+AI_REASONING_EFFORT=low
 AI_API_KEY=ваш-ключ
 AI_REVIEW=true</pre><p class="muted">Для OpenAI: AI_PROVIDER=openai. Для локальной модели: AI_PROVIDER=ollama, AI_BASE_URL=http://127.0.0.1:11434. Ключ остаётся на сервере. API должен поддерживать JSON Schema.</p><p>Точность относительно Ground Truth ещё не измерена. Уверенность модели в результате — её самооценка.</p></dialog>
 <dialog id="appealDialog"><form id="appealForm"><div class="dialog-heading"><h2>Оспорить критерий</h2><button type="button" data-close="appealDialog" aria-label="Закрыть">×</button></div><p id="appealTitle"></p><label class="field">Что нужно пересмотреть?<textarea id="appealComment" required maxlength="5000" rows="5" placeholder="Объясните, какой фрагмент не учтён"></textarea></label><button class="primary">Сохранить апелляцию</button></form></dialog>

@@ -22,7 +22,8 @@ def config():
     key = os.getenv('AI_API_KEY', '') or (os.getenv('OPENAI_API_KEY', '') if provider == 'openai' else '')
     ready = bool(base and model and (key or provider == 'ollama'))
     return {'provider': provider, 'base_url': base, 'model': model, 'key': key, 'ready': ready,
-            'review': os.getenv('AI_REVIEW', 'true').lower() == 'true'}
+            'review': os.getenv('AI_REVIEW', 'true').lower() == 'true',
+            'reasoning_effort': os.getenv('AI_REASONING_EFFORT', '')}
 
 
 def public_config():
@@ -37,6 +38,8 @@ class Provider:
             raise ProviderError('AI не подключён. Укажите AI_PROVIDER, AI_BASE_URL, AI_MODEL и AI_API_KEY в .env, затем перезапустите сервер.')
         if self.cfg['provider'] not in ['openai', 'openai_compatible', 'ollama']:
             raise ProviderError('Поддерживаются openai, openai_compatible и ollama.')
+        if self.cfg['reasoning_effort'] not in ['', 'none', 'minimal', 'low', 'medium', 'high']:
+            raise ProviderError('AI_REASONING_EFFORT: допустимы none, minimal, low, medium или high.')
         try:
             validate_url(self.cfg['base_url'])
         except ValueError as e:
@@ -60,6 +63,8 @@ class Provider:
             body = {'model': c['model'], 'messages': messages,
                     'response_format': {'type': 'json_schema', 'json_schema': {
                         'name': 'assessment', 'strict': True, 'schema': schema}}}
+            if c['reasoning_effort']:
+                body['reasoning_effort'] = c['reasoning_effort']
         headers = {'Content-Type': 'application/json'}
         if c['key']: headers['Authorization'] = 'Bearer ' + c['key']
         started = time.monotonic()

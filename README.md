@@ -41,9 +41,12 @@ python3 manage.py fetch --group DEV
 AI_PROVIDER=openai_compatible
 AI_BASE_URL=https://generativelanguage.googleapis.com/v1beta/openai
 AI_MODEL=gemini-3.8-flash
+AI_REASONING_EFFORT=low
 AI_API_KEY=ваш-ключ-без-пробелов-и-пунктуации
 AI_REVIEW=true
 ```
+
+Для демо используется `AI_REASONING_EFFORT=low`, чтобы уменьшить задержку. Повторная проверка включена; влияние режима на точность требует сравнения с Ground Truth. Для других совместимых провайдеров оставьте параметр пустым, если они его не поддерживают.
 
 Первый запуск — один диалог: `python3 manage.py evaluate --id p1-ru-001`. Затем откройте его в интерфейсе: будут доступны итог, критерии, цитаты и апелляции. Для следующих диалогов используйте «Запустить оценку» или выбор нескольких записей.
 

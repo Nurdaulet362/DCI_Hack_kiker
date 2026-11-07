@@ -9,3 +9,7 @@ __pycache__/
 *.pdf
 .venv/
 work/
+
+# Local development tools and generated architecture maps
+tools/
+graphify-out/

@@ -10,42 +10,55 @@ def digest(value):
 
 
 def validate_checklist(checklist):
-    if not isinstance(checklist, dict) or not str(checklist.get('name', '')).strip():
-        raise ValueError('Укажите название чек-листа.')
+    def text(value, label, limit, required=True):
+        if not isinstance(value, str) or len(value) > limit or (required and not value.strip()):
+            raise ValueError(f'{label}: нужна строка длиной до {limit} символов.')
+
+    def number(value):
+        return type(value) in [int, float] and 0 <= value <= 10000 and math.isfinite(value)
+
+    if not isinstance(checklist, dict):
+        raise ValueError('Чек-лист должен быть объектом.')
+    text(checklist.get('name'), 'Название чек-листа', 200)
     criteria = checklist.get('criteria')
     if not isinstance(criteria, list) or not 1 <= len(criteria) <= 40:
         raise ValueError('Чек-лист должен содержать от 1 до 40 критериев.')
     seen = set()
     for c in criteria:
+        if not isinstance(c, dict):
+            raise ValueError('Каждый критерий должен быть объектом.')
         cid = c.get('id')
-        if not isinstance(cid, str) or not cid or len(cid) > 64 or cid in seen:
-            raise ValueError('ID критериев должны быть уникальными строками длиной до 64 символов.')
+        text(cid, 'ID критерия', 64)
+        if cid in seen:
+            raise ValueError('ID критериев должны быть уникальными.')
         seen.add(cid)
         if c.get('kind') not in ['binary', 'scale', 'flag']:
             raise ValueError('Тип критерия: binary, scale или flag.')
         if not isinstance(c.get('allow_na'), bool):
             raise ValueError('allow_na должен быть логическим значением.')
-        if c['allow_na'] and not str(c.get('na_rule', '')).strip():
-            raise ValueError('Для N/A нужно явное условие применимости.')
-        for key in ['title', 'rule', 'section']:
-            if not isinstance(c.get(key), str) or not c[key].strip():
-                raise ValueError(f'Заполните {key} для {cid}.')
+        text(c.get('na_rule', ''), 'Условие N/A', 10000, c['allow_na'])
+        for key, limit in [('title', 300), ('rule', 10000), ('section', 200)]:
+            text(c.get(key), key, limit)
         weight = c.get('weight')
-        if type(weight) not in [int, float] or not math.isfinite(weight) or weight < 0:
-            raise ValueError('Вес должен быть конечным неотрицательным числом.')
+        if not number(weight):
+            raise ValueError('Вес должен быть конечным числом от 0 до 10000.')
         if c['kind'] == 'flag' and weight != 0:
             raise ValueError('Флаг нарушения должен иметь нулевой вес.')
+        levels = c.get('levels', [])
+        if not isinstance(levels, list) or len(levels) > 20:
+            raise ValueError('Шкала должна быть списком не более чем из 20 ступеней.')
         if c['kind'] == 'scale':
-            levels = c.get('levels')
-            if not isinstance(levels, list) or len(levels) < 2:
-                raise ValueError('Задайте минимум две ступени шкалы.')
-            values = [l.get('value') for l in levels]
-            if any(type(v) not in [int, float] or not math.isfinite(v) or v < 0 for v in values):
-                raise ValueError('Ступени должны быть конечными неотрицательными числами.')
+            if len(levels) < 2 or any(not isinstance(level, dict) for level in levels):
+                raise ValueError('Задайте от 2 до 20 ступеней шкалы в виде объектов.')
+            values = [level.get('value') for level in levels]
+            if not all(number(value) for value in values):
+                raise ValueError('Ступени должны быть конечными числами от 0 до 10000.')
             if len(set(values)) != len(values) or min(values) != 0 or max(values) <= 0:
                 raise ValueError('Шкала должна включать 0 и уникальные положительные ступени.')
-            if any(not str(l.get('description', '')).strip() for l in levels):
-                raise ValueError('Опишите каждую ступень шкалы.')
+            for level in levels:
+                text(level.get('description'), 'Описание ступени', 5000)
+        elif levels:
+            raise ValueError('Ступени задаются только для критерия типа scale.')
     return checklist
 
 
@@ -86,7 +99,8 @@ def normalize_conversation(record):
 
 def validate_assessment(result, checklist, conversation):
     expected = {c['id'] for c in checklist['criteria']}
-    if not isinstance(result, dict) or set(result.get('criteria', {})) != expected:
+    if (not isinstance(result, dict) or not isinstance(result.get('criteria'), dict)
+            or set(result['criteria']) != expected):
         raise ValueError('AI должен оценить каждый критерий ровно один раз.')
     if not isinstance(result.get('summary'), str) or not isinstance(result.get('uncertainties'), list) or any(
             not isinstance(u, str) for u in result['uncertainties']):
@@ -95,6 +109,8 @@ def validate_assessment(result, checklist, conversation):
     order = {mid: i for i, mid in enumerate(messages)}
     for c in checklist['criteria']:
         r = result['criteria'][c['id']]
+        if not isinstance(r, dict):
+            raise ValueError('Оценка критерия должна быть объектом.')
         if r.get('answer') not in choices(c):
             raise ValueError(f"Недопустимая оценка {c['id']}.")
         if not isinstance(r.get('reason'), str) or not r['reason'].strip():
@@ -112,6 +128,8 @@ def validate_assessment(result, checklist, conversation):
         if not isinstance(evidence, list) or not 1 <= len(evidence) <= 10:
             raise ValueError('Нужно 1–10 ссылок на доказательства или проверенный участок.')
         for e in evidence:
+            if not isinstance(e, dict):
+                raise ValueError('Доказательство должно быть объектом.')
             mid, quote = e.get('message_id'), e.get('quote')
             if mid not in messages or not isinstance(quote, str) or not quote.strip():
                 raise ValueError('Доказательство ссылается на отсутствующую реплику.')

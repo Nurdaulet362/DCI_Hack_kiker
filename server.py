@@ -65,6 +65,10 @@ class App:
 
 def handler_for(app):
     class Handler(BaseHTTPRequestHandler):
+        def setup(self):
+            super().setup()
+            self.connection.settimeout(15)
+
         def log_message(self, fmt, *args):
             # Query strings may contain private IDs. Keep default console output quiet.
             pass
@@ -76,7 +80,9 @@ def handler_for(app):
             self.send_header('Content-Length', str(len(raw)))
             self.send_header('X-Content-Type-Options', 'nosniff')
             self.send_header('Cache-Control', 'no-store')
-            self.send_header('Content-Security-Policy', "default-src 'self'; script-src 'self'; style-src 'self'; connect-src 'self'; media-src https: http:; base-uri 'none'; frame-ancestors 'none'")
+            self.send_header('Referrer-Policy', 'no-referrer')
+            self.send_header('X-Frame-Options', 'DENY')
+            self.send_header('Content-Security-Policy', "default-src 'self'; script-src 'self'; style-src 'self'; connect-src 'self'; media-src https: http:; object-src 'none'; form-action 'self'; base-uri 'none'; frame-ancestors 'none'")
             self.end_headers()
             self.wfile.write(raw)
 
@@ -116,10 +122,14 @@ def handler_for(app):
                 if host.split(':')[0] not in ['127.0.0.1', 'localhost']:
                     return self.send({'error': 'Недопустимый Host.'}, 403)
                 origin = self.headers.get('Origin')
+                if self.headers.get('Sec-Fetch-Site') == 'cross-site':
+                    return self.send({'error': 'Запрос с другого сайта запрещён.'}, 403)
                 if origin and origin not in [f'http://{host}', f'https://{host}']:
                     return self.send({'error': 'Недопустимый Origin.'}, 403)
                 if self.headers.get('Content-Type', '').split(';')[0] != 'application/json':
                     return self.send({'error': 'Используйте application/json.'}, 415)
+                if self.headers.get('Transfer-Encoding') or len(self.headers.get_all('Content-Length', [])) != 1:
+                    return self.send({'error': 'Требуется один Content-Length без Transfer-Encoding.'}, 400)
                 length = int(self.headers.get('Content-Length', 0))
                 if not 0 < length <= 20*1024*1024: raise ValueError('Максимальный размер запроса: 20 МБ.')
                 body = json.loads(self.rfile.read(length))

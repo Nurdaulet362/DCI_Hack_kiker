@@ -1,5 +1,6 @@
 import copy
 import json
+import os
 import sqlite3
 import uuid
 from contextlib import contextmanager
@@ -16,6 +17,11 @@ def now():
 class Store:
     def __init__(self, path=None):
         self.path = str(path or ROOT / 'data/cqa.sqlite3')
+        fd = os.open(self.path, os.O_CREAT | os.O_RDWR, 0o600)
+        try:
+            if os.name == 'posix': os.fchmod(fd, 0o600)
+        finally:
+            os.close(fd)
         with self.db() as db:
             db.executescript('''
             CREATE TABLE IF NOT EXISTS conversations (id TEXT PRIMARY KEY, body TEXT NOT NULL, hash TEXT NOT NULL);

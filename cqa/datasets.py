@@ -5,6 +5,7 @@ import urllib.parse
 import urllib.request
 
 from . import settings
+from .network import open_api
 
 
 def fetch_dataset(group_id='DEV'):
@@ -17,7 +18,7 @@ def fetch_dataset(group_id='DEV'):
     params['group_id'] = [group_id]
     url = urllib.parse.urlunsplit(parts._replace(query=urllib.parse.urlencode(params, doseq=True)))
     try:
-        with urllib.request.urlopen(url, timeout=90) as r:
+        with open_api(url, timeout=90) as r:
             raw = r.read(20*1024*1024+1)
         if len(raw) > 20*1024*1024: raise ValueError('Ответ API превышает 20 МБ.')
         return json.loads(raw)

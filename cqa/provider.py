@@ -6,6 +6,7 @@ import urllib.error
 import urllib.request
 
 from . import settings  # loads .env before reading configuration
+from .network import open_api, validate_url
 
 
 class ProviderError(RuntimeError):
@@ -36,6 +37,10 @@ class Provider:
             raise ProviderError('AI не подключён. Укажите AI_PROVIDER, AI_BASE_URL, AI_MODEL и AI_API_KEY в .env, затем перезапустите сервер.')
         if self.cfg['provider'] not in ['openai', 'openai_compatible', 'ollama']:
             raise ProviderError('Поддерживаются openai, openai_compatible и ollama.')
+        try:
+            validate_url(self.cfg['base_url'])
+        except ValueError as e:
+            raise ProviderError(str(e)) from None
 
     def complete(self, system, user, schema):
         c = self.cfg
@@ -62,10 +67,14 @@ class Provider:
             try:
                 req = urllib.request.Request(c['base_url'] + endpoint,
                                              json.dumps(body).encode(), headers)
-                with urllib.request.urlopen(req, timeout=180) as response:
-                    result = json.load(response)
+                with open_api(req, timeout=180) as response:
+                    raw = response.read(4 * 1024 * 1024 + 1)
+                if len(raw) > 4 * 1024 * 1024:
+                    raise ProviderError('Ответ AI API превышает 4 МБ.')
+                result = json.loads(raw)
                 break
             except urllib.error.HTTPError as e:
+                e.close()
                 # Do not expose response bodies: some gateways echo credentials and requests.
                 if e.code in [429, 500, 502, 503, 504] and attempt < 2:
                     time.sleep(2 ** attempt)

@@ -1,0 +1,15 @@
+.env
+.env.*
+!.env.example
+data/*
+!data/.gitkeep
+__pycache__/
+*.pyc
+.DS_Store
+*.pdf
+.venv/
+work/
+
+# Local development tools and generated architecture maps
+tools/
+graphify-out/

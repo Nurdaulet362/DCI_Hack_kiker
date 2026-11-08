@@ -66,7 +66,7 @@ function renderList() {
 async function refresh() {
   const data=await api('/api/state');
   Object.assign(state,{conversations:data.conversations,checklists:data.checklists,ai:data.ai});
-  if(state.reviewMode===null) state.reviewMode=!!state.ai.review;
+  if(state.reviewMode===null) state.reviewMode='auto';
   const scored=state.conversations.filter(c=>c.score && !c.stale), numeric=scored.filter(c=>c.score.total!=null && c.checklist_id===state.checklists[0]?.id);
   $('reviewCount').textContent=state.conversations.filter(isReview).length;
   $('count').textContent=state.conversations.length;
@@ -76,7 +76,7 @@ async function refresh() {
   $('languages').textContent=['RU','KZ','EN'].map(lang=>`${lang} ${state.conversations.filter(c=>c.language===lang).length}`).join(' · ');
   $('aiStatus').textContent=state.ai.ready ? `${state.ai.model} · настроен` : 'AI не подключён';
   $('configBtn').classList.toggle('ready',state.ai.ready);
-  $('notice').textContent=state.ai.ready ? 'Анализ '+(state.ai.review?'с повторной проверкой':'в один проход')+' · Точность относительно эталона ещё не измерена.' : 'Диалоги готовы. Для реальной AI-оценки подключите модель в .env после уточнения провайдера. Оценки и баллы пока не рассчитаны.';
+  $('notice').textContent=state.ai.ready ? 'Анализ '+(state.reviewMode==='auto'?'с выборочной перепроверкой':state.reviewMode?'с повторной проверкой':'в один проход')+' · Точность относительно эталона ещё не измерена.' : 'Диалоги готовы. Для реальной AI-оценки подключите модель в .env после уточнения провайдера. Оценки и баллы пока не рассчитаны.';
   $('configInfo').innerHTML=`<p><strong>Статус:</strong> ${state.ai.ready?'настройки заполнены, доступность проверяется при запуске оценки':'требуются настройки'}<br><strong>Провайдер:</strong> ${escapeHtml(state.ai.provider)}<br><strong>Модель:</strong> ${escapeHtml(state.ai.model || 'не выбрана')}</p>`;
   renderList();
   const job=data.active_job || data.latest_job;
@@ -85,7 +85,7 @@ async function refresh() {
 function criterionChoices(c) { return (c.kind==='scale' ? c.levels.map(l=>String(l.value)) : ['yes','no']).concat(c.allow_na ? ['na'] : []); }
 function renderProofChecks(checks) {
   if (!checks || !Object.keys(checks).length) return '';
-  const labels={greeting:'Приветствие',introduction:'Представление',enough_initial:'Данных хватало с начала',clarified_before_answer:'Уточнение до ответа',opportunity:'Возможность завершить',summary_or_help:'Итог или дальнейшая помощь',farewell:'Прощание оператора',insult:'Оскорбление',private_paid_offer:'Частная платная услуга',confidential_disclosure:'Раскрытие конфиденциальных данных'};
+  const labels={protected_action:'Защищённое действие оператора',verified_before_action:'Проверка личности до действия',greeting:'Приветствие',introduction:'Представление',enough_initial:'Данных хватало с начала',clarified_before_answer:'Уточнение до ответа',opportunity:'Возможность завершить',summary_or_help:'Итог или дальнейшая помощь',farewell:'Прощание оператора',insult:'Оскорбление',private_paid_offer:'Частная платная услуга',confidential_disclosure:'Раскрытие конфиденциальных данных'};
   const states={present:'Подтверждено',absent:'Не обнаружено',uncertain:'Неясно — нужна проверка'};
   return `<details class="result-provenance"><summary>Проверка отдельных фактов AI</summary><p class="small-note">Цитаты и роли проверены сервером. Правильность трактовки текста требует проверки экспертом.</p>${Object.entries(checks).map(([key,p])=>`<div><strong>${escapeHtml(labels[key]||key)}: ${escapeHtml(states[p.state]||p.state)}</strong><p>${escapeHtml(p.reason)}</p>${p.evidence.map(v=>`<button class="evidence" data-evidence="${escapeHtml(v.message_id)}"><span>↗ ${escapeHtml(v.message_id)}</span>«${escapeHtml(v.quote)}»</button>`).join('')}</div>`).join('')}</details>`;
 }
@@ -102,15 +102,16 @@ function renderResult(e) {
     ${renderProofChecks(original.checks)}
     <p class="small-note">Проверен участок ${escapeHtml(r.checked_start)}–${escapeHtml(r.checked_end)} · уверенность AI ${Math.round(r.confidence*100)}% (самооценка)</p>
     ${open?`<span class="badge warn">Апелляция на рассмотрении</span> <button class="text-button" data-resolve="${escapeHtml(open.id)}">Рассмотреть</button>`:`<button class="text-button" data-appeal="${escapeHtml(c.id)}">Оспорить оценку</button>`}</article>`; }).join('')}
-  <details class="result-provenance"><summary>Модель, время и история проверки</summary><div>${escapeHtml(e.provider)} / ${escapeHtml(e.model)} · ${e.reviewed?'с повторной проверкой':'один проход'}<br>${e.usage.calls} вызовов · ${e.usage.input_tokens+e.usage.output_tokens} токенов · ${fmt(e.usage.seconds)} сек. · стоимость ${e.usage.cost==null?'не задана':fmt(e.usage.cost)+' USD'}<br>Изменено при повторной проверке: ${e.review_changes.length}<br>Исходный итог AI: ${fmt(e.score.total)} · Правила: ${escapeHtml(e.prompt_version)}<br>SHA-256 транскрипта: ${escapeHtml(e.transcript_hash.slice(0,16))}…<br>${escapeHtml(new Date(e.created).toLocaleString('ru'))}</div></details>`;
+  <details class="result-provenance"><summary>Модель, время и история проверки</summary><div>${escapeHtml(e.provider)} / ${escapeHtml(e.model)} · ${e.reviewed?'с повторной проверкой':'один проход'}<br>${e.review_mode==='adaptive_review'?`Выборочная проверка: ${e.reviewed?'второй проход выполнен':'второй проход не назначен'}${e.review_decision?.reasons?.length?' · '+escapeHtml(e.review_decision.reasons.join('; ')):''}<br>`:''}${e.usage.calls} вызовов · ${e.usage.input_tokens+e.usage.output_tokens} токенов · ${fmt(e.usage.seconds)} сек. · стоимость ${e.usage.cost==null?'не задана':fmt(e.usage.cost)+' USD'}<br>Изменено при повторной проверке: ${e.review_changes.length}<br>Исходный итог AI: ${fmt(e.score.total)} · Правила: ${escapeHtml(e.prompt_version)}<br>SHA-256 транскрипта: ${escapeHtml(e.transcript_hash.slice(0,16))}…<br>${escapeHtml(new Date(e.created).toLocaleString('ru'))}</div></details>`;
 }
 function renderDetail() {
+  if(state.ai.ready) $('notice').textContent='Анализ '+(state.reviewMode==='auto'?'с выборочной перепроверкой':state.reviewMode?'с повторной проверкой':'в один проход')+' · Точность относительно эталона ещё не измерена.';
   const current=state.conversation, e=state.evaluation;
   if (!current) return;
   const conv=e?e.conversation:current, audio=safeUrl(conv.audio_url);
   const isOld=!!e && JSON.stringify(conv)!==JSON.stringify(current);
-  $('detail').innerHTML=`<div class="detail-heading"><div><span class="badge">${escapeHtml(conv.language)} · ${conv.channel==='voice call'?'Звонок':'Чат'}</span><h2>${escapeHtml(conv.conversation_id)}</h2><p class="small-note">${conv.transcript.length} реплик · ${e?'сохранённая версия транскрипта':'текущий транскрипт'}</p></div><div class="detail-actions"><select id="detailChecklist" aria-label="Чек-лист для новой оценки">${state.checklists.map((c,i)=>`<option value="${escapeHtml(c.id)}" ${c.id===(state.checklistId || state.checklists[0]?.id)?'selected':''}>${escapeHtml(c.name)} · v${state.checklists.length-i}</option>`).join('')}</select><select id="reviewMode" aria-label="Режим оценки"><option value="review" ${state.reviewMode?'selected':''}>С повторной проверкой</option><option value="single" ${!state.reviewMode?'selected':''}>Один проход · быстрее</option></select><button class="primary" id="evaluateBtn" ${!state.ai.ready||state.job||state.starting?'disabled':''}>${e?'Оценить заново':'Запустить оценку'}</button>${e?'<button id="exportBtn">Экспорт JSON ↓</button>':''}</div></div>
-  <p class="mode-note">${state.reviewMode?'Два прохода AI.':'Один проход AI без повторного анализа.'} Влияние режима на точность ещё не измерено.</p>
+  $('detail').innerHTML=`<div class="detail-heading"><div><span class="badge">${escapeHtml(conv.language)} · ${conv.channel==='voice call'?'Звонок':'Чат'}</span><h2>${escapeHtml(conv.conversation_id)}</h2><p class="small-note">${conv.transcript.length} реплик · ${e?'сохранённая версия транскрипта':'текущий транскрипт'}</p></div><div class="detail-actions"><select id="detailChecklist" aria-label="Чек-лист для новой оценки">${state.checklists.map((c,i)=>`<option value="${escapeHtml(c.id)}" ${c.id===(state.checklistId || state.checklists[0]?.id)?'selected':''}>${escapeHtml(c.name)} · v${state.checklists.length-i}</option>`).join('')}</select><select id="reviewMode" aria-label="Режим оценки"><option value="auto" ${state.reviewMode==='auto'?'selected':''}>Быстро · выборочная проверка</option><option value="review" ${state.reviewMode===true?'selected':''}>С повторной проверкой</option><option value="single" ${state.reviewMode===false?'selected':''}>Один проход · быстрее</option></select><button class="primary" id="evaluateBtn" ${!state.ai.ready||state.job||state.starting?'disabled':''}>${e?'Оценить заново':'Запустить оценку'}</button>${e?'<button id="exportBtn">Экспорт JSON ↓</button>':''}</div></div>
+  <p class="mode-note">${state.reviewMode==='auto'?'Один проход; сложные случаи перепроверяются автоматически.':state.reviewMode?'Два прохода AI.':'Один проход AI без повторного анализа.'} Влияние режима на точность ещё не измерено.</p>
   ${isOld?'<div class="snapshot-warning">Показана сохранённая версия. Текущий транскрипт изменился — запустите новую оценку.</div>':''}
   ${e && e.checklist.id!==state.checklists[0]?.id?'<div class="snapshot-warning">Эта оценка использует предыдущую версию чек-листа. Новые правила применятся при повторной оценке.</div>':''}
   ${state.history.length?`<div class="history-bar">История: <select id="historySelect" aria-label="История оценок"><option value="">Текущий диалог без результата</option>${state.history.map((h,i)=>`<option value="${h.id}" ${e?.id===h.id?'selected':''}>${state.history.length-i} · ${escapeHtml(new Date(h.created).toLocaleString('ru'))}</option>`).join('')}</select></div>`:''}
@@ -119,12 +120,12 @@ function renderDetail() {
 }
 async function openConversation(id, evaluationId) {
   const version=++state.loadVersion;
-  state.activeId=id; renderList();
+  
   const data=await api('/api/conversation?id='+encodeURIComponent(id));
   const eid=evaluationId || data.history[0]?.id;
   const evaluation=eid?await api('/api/evaluation?id='+encodeURIComponent(eid)):null;
   if (version!==state.loadVersion) return;
-  Object.assign(state,{conversation:data.conversation, history:data.history, evaluation}); renderDetail();
+  Object.assign(state,{activeId:id, conversation:data.conversation, history:data.history, evaluation}); renderList(); renderDetail();
 }
 async function evaluateIds(ids) {
   if(state.starting || state.job) return;
@@ -231,7 +232,7 @@ document.addEventListener('click', event=>guarded(async()=>{
 document.addEventListener('change',event=>guarded(async()=>{
   const el=event.target;
   if(el.id==='detailChecklist') state.checklistId=el.value;
-  if(el.id==='reviewMode') {state.reviewMode=el.value==='review';renderDetail();}
+  if(el.id==='reviewMode') {state.reviewMode=el.value==='auto'?'auto':el.value==='review';renderDetail();}
   if (el.dataset.select) { el.checked?state.selected.add(el.dataset.select):state.selected.delete(el.dataset.select); renderList(); }
   if(el.id==='selectAll') { for(const c of visibleConversations()) el.checked?state.selected.add(c.conversation_id):state.selected.delete(c.conversation_id); renderList(); }
   if(['language','filter'].includes(el.id)) renderList();

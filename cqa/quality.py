@@ -6,12 +6,17 @@ Unknown/edited rubrics retain generic evaluation instead of inheriting old rules
 import json
 from pathlib import Path
 
-CONTRACT_VERSION = 'proof-contracts-2-explicit-aggregation'
+CONTRACT_VERSION = 'proof-contracts-3-identity-semantics'
 CONTRACTS = json.loads((Path(__file__).with_name('proof_contracts.json')).read_text())
 
 # Explain the same logic that validate_proofs enforces. These are rubric mappings,
 # not labels for any specific transcript; changed rules receive no old mapping.
 AGGREGATION_INSTRUCTIONS = {
+    'identity': [
+        {'if': 'protected_action=absent: запрос не требовал защищённого действия.', 'answer': 'na'},
+        {'if': 'protected_action=present И verified_before_action=present.', 'answer': 'yes'},
+        {'if': 'Иначе: защищённое действие без подтверждённой проверки или неоднозначность.',
+         'answer': 'no', 'note': 'При uncertain укажи конкретное сомнение в uncertainties.'}],
     'all': [
         {'if': 'Все checks имеют state=present.', 'answer': 'yes'},
         {'if': 'Хотя бы один check имеет state=absent.', 'answer': 'no'},
@@ -132,6 +137,15 @@ def validate_proofs(result, checklist, conversation):
                 raise ValueError(f'{cid}: Да требует и итога/помощи, и прощания оператора.')
             elif row['answer'] == 'na':
                 raise ValueError(f'{cid}: N/A требует подтверждённого отсутствия возможности завершить чат.')
+        elif kind == 'identity':
+            if states['protected_action'] == states['verified_before_action'] == 'present':
+                action_at = min(order[e['message_id']] for e in proofs['protected_action']['evidence'])
+                verification_at = max(order[e['message_id']] for e in proofs['verified_before_action']['evidence'])
+                if verification_at > action_at:
+                    raise ValueError(f'{cid}: подтверждение проверки должно предшествовать защищённому действию; цитата после него не подходит.')
+            if states['protected_action'] == 'absent': expected = 'na'
+            elif states['protected_action'] == states['verified_before_action'] == 'present': expected = 'yes'
+            else: expected = 'no'
         elif kind == 'needs':
             if states['enough_initial'] == 'present': expected = 'na'
             elif states['enough_initial'] == 'absent':

@@ -72,6 +72,8 @@ def main():
     imp = sub.add_parser('import'); imp.add_argument('path', type=Path)
     run = sub.add_parser('evaluate'); run.add_argument('--id', action='append')
     run.add_argument('--limit', type=int, default=1); run.add_argument('--all', action='store_true')
+    run.add_argument('--review-mode', choices=['auto', 'full', 'single'], default=None,
+                     help='auto: второй проход только для рискованных случаев; full: всегда; single: один проход.')
     run.add_argument('--resume', action='store_true', help='Skip successful identical transcript/checklist/experiment; retry errors.')
     run.add_argument('--checklist'); run.add_argument('--output', type=Path, default=ROOT/'data/predictions.json')
     label = sub.add_parser('label-template', help='Export blank independent human annotation pack; no AI calls or AI answers.')
@@ -108,7 +110,8 @@ def main():
     elif args.command == 'evaluate':
         provider = Provider()
         checklist = store.checklist(args.checklist)
-        experiment = experiment_config(provider, provider.cfg['review'])
+        review = {'auto': 'auto', 'full': True, 'single': False}.get(args.review_mode, provider.cfg['review'])
+        experiment = experiment_config(provider, review)
         ids = args.id or [c['conversation_id'] for c in store.conversations()]
         if not args.id and not args.all: ids = ids[:max(1, args.limit)]
         if len(set(ids)) != len(ids): raise ValueError('Повторяющиеся ID в запросе.')
@@ -129,7 +132,7 @@ def main():
                         write_private_json(args.output, list(results.values()))
                         print(f'{cid}: reused validated result (no API call)', flush=True)
                         continue
-                result = evaluate(conv, checklist, provider, review=provider.cfg['review'],
+                result = evaluate(conv, checklist, provider, review=review,
                                   progress=lambda message: print(f'{cid}: {message}', flush=True))
                 saved = store.save_evaluation(conv, checklist, result)
                 results[cid] = saved
@@ -139,6 +142,8 @@ def main():
                 results[cid] = {'conversation_id': cid, 'error': str(e)}
                 print(f'{cid}: FAILED: {e}', flush=True)
             write_private_json(args.output, list(results.values()))
+        failed = sum(bool(results.get(cid, {}).get('error')) for cid in ids)
+        if failed: raise ProviderError(f'Не удалось оценить {failed} из {len(ids)} диалогов. Подробности сохранены в --output.')
 
 
 if __name__ == '__main__':

@@ -27,6 +27,8 @@ def config():
             'ready': bool(base and model and (key or provider == 'ollama')),
             'review': os.getenv('AI_REVIEW', 'true').lower() == 'true',
             'reasoning_effort': os.getenv('AI_REASONING_EFFORT', ''),
+            'context_window': os.getenv('AI_CONTEXT_WINDOW', '32768'),
+            'think': os.getenv('AI_THINK', 'false').lower() == 'true',
             'max_output_tokens': os.getenv('AI_MAX_OUTPUT_TOKENS', '') or '8192',
             'timeout_seconds': os.getenv('AI_TIMEOUT_SECONDS', '') or '180'}
 
@@ -62,7 +64,7 @@ class Provider:
             raise ProviderError('Поддерживаются openai, openai_compatible и ollama.')
         if self.cfg['reasoning_effort'] not in ['', 'none', 'minimal', 'low', 'medium', 'high']:
             raise ProviderError('AI_REASONING_EFFORT: допустимы none, minimal, low, medium или high.')
-        for field, env, minimum, maximum in [('max_output_tokens', 'AI_MAX_OUTPUT_TOKENS', 1024, 32768),
+        for field, env, minimum, maximum in [('context_window', 'AI_CONTEXT_WINDOW', 4096, 131072),('max_output_tokens', 'AI_MAX_OUTPUT_TOKENS', 1024, 32768),
                                              ('timeout_seconds', 'AI_TIMEOUT_SECONDS', 10, 300)]:
             try:
                 value = int(self.cfg[field])
@@ -91,7 +93,9 @@ class Provider:
             # Ollama's constrained decoder does not replace a readable output contract.
             messages[0]['content'] += '\nВерни JSON по этой схеме:\n' + json.dumps(schema, ensure_ascii=False)
             body = {'model': c['model'], 'messages': messages, 'stream': False,
-                    'format': schema, 'options': {'temperature': 0, 'num_predict': c['max_output_tokens']}}
+                    'format': schema, 'think': c.get('think', False),
+                    'options': {'temperature': 0, 'num_ctx': c.get('context_window', 32768),
+                                'num_predict': c['max_output_tokens']}}
         else:
             endpoint = '/chat/completions'
             body = {'model': c['model'], 'messages': messages,

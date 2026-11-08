@@ -222,11 +222,14 @@ class QualityTests(unittest.TestCase):
 
     def test_ollama_receives_readable_schema_as_well_as_decoder_format(self):
         with patch.dict(os.environ, {'AI_PROVIDER': 'ollama', 'AI_MODEL': 'fixture',
-                'AI_BASE_URL': 'http://127.0.0.1:11434', 'AI_REASONING_EFFORT': ''}), \
+                'AI_BASE_URL': 'http://127.0.0.1:11434', 'AI_REASONING_EFFORT': '',
+                'AI_CONTEXT_WINDOW': '32768', 'AI_THINK': 'false'}), \
                 patch('cqa.provider.open_api', return_value=io.BytesIO(b'{"message":{"content":"{}"}}')) as send:
             schema = response_schema(CHECKLIST)
             Provider().complete('audit', 'dialogue', schema)
         body = json.loads(send.call_args.args[0].data)
         self.assertEqual(body['format'], schema)
+        self.assertFalse(body['think'])
+        self.assertEqual(body['options']['num_ctx'], 32768)
         self.assertIn('private_paid_offer', body['messages'][0]['content'])
 

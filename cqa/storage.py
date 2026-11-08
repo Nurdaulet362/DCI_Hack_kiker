@@ -80,7 +80,10 @@ class Store:
         elif isinstance(payload, dict):
             if payload.get('isSuccess') is False:
                 raise ValueError('API организаторов сообщил об ошибке.')
-            records = payload.get('data', {}).get('records') if 'data' in payload else payload.get('records')
+            data = payload.get('data')
+            if 'data' in payload and not isinstance(data, dict):
+                raise ValueError('data должен быть объектом с массивом records.')
+            records = data.get('records') if 'data' in payload else payload.get('records')
             if records is None and 'conversation_id' in payload: records = [payload]
         else: records = None
         if not isinstance(records, list) or not 1 <= len(records) <= 1000:

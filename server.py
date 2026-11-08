@@ -35,6 +35,7 @@ class App:
     def __init__(self, store=None):
         self.store = store or Store()
         self.store.interrupt_jobs()
+        self.stopping = threading.Event()
         self.lock = threading.RLock()
         self.pool = ThreadPoolExecutor(max_workers=1)
         dev = ROOT / 'data/dev.json'
@@ -56,15 +57,15 @@ class App:
 
     def progress(self, jid, message):
         with self.lock:
-            if self.store.job(jid)['status'] == 'cancelling': raise JobCancelled()
+            if self.stopping.is_set() or self.store.job(jid)['status'] == 'cancelling': raise JobCancelled()
             self.update(jid, message=message)
 
     def start(self, ids, checklist_id, review=None):
         if (not isinstance(ids, list) or not 1 <= len(ids) <= 100 or
                 any(not isinstance(cid, str) or not cid.strip() for cid in ids) or len(set(ids)) != len(ids)):
             raise ValueError('Выберите 1–100 уникальных ID диалогов.')
-        if review is not None and type(review) is not bool:
-            raise ValueError('review должен быть логическим значением.')
+        if review is not None and type(review) is not bool and review != 'auto':
+            raise ValueError('review должен быть true, false или auto.')
         provider = Provider()
         checklist = self.store.checklist(checklist_id)
         conversations = [self.store.conversation(cid) for cid in ids]
@@ -94,6 +95,7 @@ class App:
     def _submit(self, conversations, checklist, provider, review, parent_job_id=None):
         jid = str(uuid.uuid4())
         with self.lock:
+            if self.stopping.is_set(): raise ValueError('Сервер останавливается.')
             if self.job_state()['active_job']:
                 raise ValueError('Дождитесь завершения текущей оценки.')
             stamp = now()
@@ -219,7 +221,7 @@ def handler_for(app):
                 if path == '/api/checklists': return self.send(app.store.save_checklist(body))
                 if path == '/api/evaluate':
                     if 'review' in body and type(body['review']) is not bool:
-                        raise ValueError('review должен быть логическим значением.')
+                        raise ValueError('review должен быть true, false или auto.')
                     return self.send(app.start(body.get('ids'), body.get('checklist_id'), body.get('review')), 202)
                 if path == '/api/job/cancel': return self.send(app.cancel(body.get('job_id')))
                 if path == '/api/job/retry': return self.send(app.retry(body.get('job_id')), 202)
@@ -246,4 +248,5 @@ if __name__ == '__main__':
     except KeyboardInterrupt: pass
     finally:
         server.server_close()
-        app.pool.shutdown(wait=False)
+        app.stopping.set()
+        app.pool.shutdown(wait=False, cancel_futures=True)

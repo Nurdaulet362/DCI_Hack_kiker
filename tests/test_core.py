@@ -12,7 +12,7 @@ from cqa.storage import Store
 from cqa.quality import contract_for
 
 
-CHECKLIST = json.loads((ROOT / 'config/default_checklist.json').read_text())
+CHECKLIST = json.loads((ROOT / 'config/default_checklist.json').read_text(encoding='utf-8'))
 
 
 def conversation():
@@ -134,7 +134,7 @@ class CoreTests(unittest.TestCase):
     def test_real_dataset_integrity(self):
         path = ROOT / 'data/dev.json'
         if not path.exists(): self.skipTest('DEV not downloaded')
-        records = json.loads(path.read_text())['data']['records']
+        records = json.loads(path.read_text(encoding='utf-8'))['data']['records']
         self.assertEqual(len(records), 65)
         for r in records: normalize_conversation(r)
         self.assertEqual(len({r['conversation_id'] for r in records}), 65)

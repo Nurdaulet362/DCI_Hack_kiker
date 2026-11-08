@@ -35,7 +35,7 @@ class Store:
                 answer TEXT, reason TEXT, created TEXT NOT NULL, resolved TEXT);
             ''')
             if not db.execute('SELECT id FROM checklists LIMIT 1').fetchone():
-                initial = json.loads((ROOT / 'config/default_checklist.json').read_text())
+                initial = json.loads((ROOT / 'config/default_checklist.json').read_text(encoding='utf-8'))
                 self._save_checklist(db, initial)
 
     @contextmanager

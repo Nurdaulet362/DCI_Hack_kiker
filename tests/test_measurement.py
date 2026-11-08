@@ -70,7 +70,7 @@ class MeasurementTests(unittest.TestCase):
                 return assessment(), {'input_tokens': 1, 'output_tokens': 2, 'seconds': 3, 'cost': None}
         p = Fixture(); conv = conversation()
         result = evaluate(conv, CHECKLIST, p, review=True)
-        self.assertEqual(result['review_mode'], 'same_model_review')
+        self.assertEqual(result['review_mode'], 'blind_same_model_review')
         self.assertEqual([c['stage'] for c in result['usage']['per_call']], ['initial', 'review'])
         self.assertNotIn('not-for-output', json.dumps(result))
         self.assertNotIn('private.test', json.dumps(result))

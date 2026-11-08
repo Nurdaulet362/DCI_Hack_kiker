@@ -1,0 +1,66 @@
+conversation_id,old_status,new_status,same_inputs,old_total,new_total,delta,changed_criteria,old_contact,old_needs,old_identity,old_consultation,old_empathy,old_management,old_closing,old_gross_error,new_contact,new_needs,new_identity,new_consultation,new_empathy,new_management,new_closing,new_gross_error
+p1-en-001,ok,ok,True,100.0,100.0,0.0,needs,yes,yes,na,20,yes,10,yes,no,yes,na,na,20,yes,10,yes,no
+p1-en-002,ok,ok,True,100.0,100.0,0.0,needs,yes,yes,na,20,yes,10,yes,no,yes,na,na,20,yes,10,yes,no
+p1-en-003,ok,ok,True,100.0,100.0,0.0,needs,yes,yes,na,20,yes,10,yes,no,yes,na,na,20,yes,10,yes,no
+p1-en-004,ok,ok,True,100.0,100.0,0.0,needs,yes,yes,na,20,yes,10,yes,no,yes,na,na,20,yes,10,yes,no
+p1-en-005,ok,ok,True,100.0,100.0,0.0,needs,yes,yes,na,20,yes,10,yes,no,yes,na,na,20,yes,10,yes,no
+p1-en-006,ok,ok,True,100.0,100.0,0.0,,yes,yes,yes,20,yes,10,yes,no,yes,yes,yes,20,yes,10,yes,no
+p1-en-007,ok,ok,True,100.0,100.0,0.0,,yes,yes,na,20,yes,10,yes,no,yes,yes,na,20,yes,10,yes,no
+p1-en-008,ok,ok,True,100.0,100.0,0.0,needs,yes,yes,na,20,yes,10,yes,no,yes,na,na,20,yes,10,yes,no
+p1-en-009,ok,ok,True,100.0,100.0,0.0,"needs, closing",yes,yes,na,20,yes,10,yes,no,yes,na,na,20,yes,10,na,no
+p1-en-010,ok,ok,True,100.0,100.0,0.0,needs,yes,yes,na,20,yes,10,yes,no,yes,na,na,20,yes,10,yes,no
+p1-en-011,ok,ok,True,100.0,100.0,0.0,needs,yes,yes,na,20,yes,10,yes,no,yes,na,na,20,yes,10,yes,no
+p1-en-012,ok,ok,True,100.0,100.0,0.0,needs,yes,yes,na,20,yes,10,yes,no,yes,na,na,20,yes,10,yes,no
+p1-en-013,ok,ok,True,50.0,31.25,-18.75,empathy,yes,yes,na,0,yes,0,no,yes,yes,yes,na,0,no,0,no,yes
+p1-en-014,ok,ok,True,31.0,60.5,29.5,"contact, empathy, management",no,yes,no,10,no,4,no,no,yes,yes,no,10,yes,7,no,no
+p1-en-015,ok,ok,True,62.5,81.25,18.75,empathy,no,yes,na,20,no,10,no,no,no,yes,na,20,yes,10,no,no
+p1-kz-001,ok,ok,True,100.0,100.0,0.0,needs,yes,yes,na,20,yes,10,yes,no,yes,na,na,20,yes,10,yes,no
+p1-kz-002,ok,ok,True,100.0,100.0,0.0,needs,yes,yes,na,20,yes,10,yes,no,yes,na,na,20,yes,10,yes,no
+p1-kz-003,ok,ok,True,100.0,100.0,0.0,,yes,yes,yes,20,yes,10,yes,no,yes,yes,yes,20,yes,10,yes,no
+p1-kz-004,ok,ok,True,100.0,100.0,0.0,needs,yes,yes,na,20,yes,10,yes,no,yes,na,na,20,yes,10,yes,no
+p1-kz-005,ok,ok,True,100.0,92.31,-7.69,"needs, closing",yes,yes,na,20,yes,10,na,no,yes,na,na,20,yes,10,no,no
+p1-kz-006,ok,ok,True,100.0,100.0,0.0,needs,yes,yes,na,20,yes,10,yes,no,yes,na,na,20,yes,10,yes,no
+p1-kz-007,ok,ok,True,100.0,100.0,0.0,needs,yes,yes,na,20,yes,10,yes,no,yes,na,na,20,yes,10,yes,no
+p1-kz-008,ok,ok,True,86.67,92.31,5.64,"contact, needs, closing",no,yes,na,20,yes,10,na,no,yes,na,na,20,yes,10,no,no
+p1-kz-009,ok,ok,True,100.0,100.0,0.0,needs,yes,yes,na,20,yes,10,yes,no,yes,na,na,20,yes,10,yes,no
+p1-kz-010,ok,ok,True,100.0,100.0,0.0,needs,yes,yes,na,20,yes,10,yes,no,yes,na,na,20,yes,10,yes,no
+p1-kz-011,ok,ok,True,81.25,100.0,18.75,"contact, needs, closing",no,yes,na,20,yes,10,no,no,yes,na,na,20,yes,10,na,no
+p1-kz-012,ok,ok,True,93.75,87.5,-6.25,consultation,yes,yes,na,15,yes,10,yes,no,yes,yes,na,10,yes,10,yes,no
+p1-kz-013,ok,ok,True,100.0,92.31,-7.69,"needs, closing, gross_error",yes,yes,na,20,yes,10,yes,no,yes,na,na,20,yes,10,no,yes
+p1-kz-014,ok,ok,True,100.0,100.0,0.0,needs,yes,yes,na,20,yes,10,yes,no,yes,na,na,20,yes,10,yes,no
+p1-kz-015,ok,ok,True,87.5,92.31,4.81,"needs, consultation",yes,yes,na,15,yes,10,no,no,yes,na,na,20,yes,10,no,no
+p1-ru-001,ok,ok,True,100.0,100.0,0.0,needs,yes,yes,na,20,yes,10,yes,no,yes,na,na,20,yes,10,yes,no
+p1-ru-002,ok,ok,True,100.0,100.0,0.0,,yes,yes,na,20,yes,10,yes,no,yes,yes,na,20,yes,10,yes,no
+p1-ru-003,ok,ok,True,100.0,93.75,-6.25,closing,yes,yes,na,20,yes,10,yes,no,yes,yes,na,20,yes,10,no,no
+p1-ru-004,ok,ok,True,100.0,100.0,0.0,needs,yes,yes,na,20,yes,10,yes,no,yes,na,na,20,yes,10,yes,no
+p1-ru-005,ok,ok,True,100.0,100.0,0.0,,yes,yes,na,20,yes,10,yes,no,yes,yes,na,20,yes,10,yes,no
+p1-ru-006,ok,ok,True,100.0,100.0,0.0,,yes,yes,yes,20,yes,10,yes,no,yes,yes,yes,20,yes,10,yes,no
+p1-ru-007,ok,ok,True,93.75,92.31,-1.44,needs,yes,yes,na,20,yes,10,no,no,yes,na,na,20,yes,10,no,no
+p1-ru-008,ok,ok,True,100.0,100.0,0.0,needs,yes,yes,na,20,yes,10,yes,no,yes,na,na,20,yes,10,yes,no
+p1-ru-009,ok,ok,True,65.0,81.88,16.88,"identity, management, closing",yes,yes,no,10,yes,10,no,no,yes,yes,na,10,yes,7,yes,no
+p1-ru-010,ok,ok,True,100.0,100.0,0.0,,yes,yes,yes,20,yes,10,yes,no,yes,yes,yes,20,yes,10,yes,no
+p1-ru-011,ok,ok,True,100.0,100.0,0.0,needs,yes,yes,na,20,yes,10,yes,no,yes,na,na,20,yes,10,yes,no
+p1-ru-012,ok,ok,True,93.75,92.31,-1.44,needs,yes,yes,na,20,yes,10,no,no,yes,na,na,20,yes,10,no,no
+p1-ru-013,ok,ok,True,100.0,100.0,0.0,needs,yes,yes,na,20,yes,10,yes,no,yes,na,na,20,yes,10,yes,no
+p1-ru-014,ok,ok,True,100.0,76.92,-23.08,"contact, needs, closing",yes,yes,na,20,yes,10,yes,no,no,na,na,20,yes,10,no,no
+p1-ru-015,ok,ok,True,100.0,100.0,0.0,needs,yes,yes,na,20,yes,10,yes,no,yes,na,na,20,yes,10,yes,no
+p1-ru-016,ok,ok,True,87.5,100.0,12.5,contact,no,yes,na,20,yes,10,yes,no,yes,yes,na,20,yes,10,yes,no
+p1-ru-017,ok,ok,True,100.0,100.0,0.0,,yes,yes,na,20,yes,10,yes,no,yes,yes,na,20,yes,10,yes,no
+p1-ru-018,ok,ok,True,13.75,12.5,-1.25,"contact, consultation, management",no,no,na,5,no,4,no,no,yes,no,na,0,no,0,no,no
+p1-ru-019,ok,ok,True,100.0,100.0,0.0,needs,yes,yes,na,20,yes,10,yes,no,yes,na,na,20,yes,10,yes,no
+p1-ru-020,ok,ok,True,100.0,100.0,0.0,needs,yes,yes,na,20,yes,10,yes,no,yes,na,na,20,yes,10,yes,no
+p1-ru-021,ok,ok,True,100.0,100.0,0.0,needs,yes,yes,na,20,yes,10,yes,no,yes,na,na,20,yes,10,yes,no
+p1-ru-022,ok,ok,True,0.0,0.0,0.0,closing,no,na,no,0,no,0,na,yes,no,na,no,0,no,0,no,yes
+p1-ru-023,ok,ok,True,100.0,100.0,0.0,"needs, gross_error",yes,yes,na,20,yes,10,yes,no,yes,na,na,20,yes,10,yes,yes
+p1-ru-024,ok,ok,True,100.0,92.31,-7.69,"needs, closing",yes,yes,na,20,yes,10,yes,no,yes,na,na,20,yes,10,no,no
+p1-ru-025,ok,ok,True,100.0,100.0,0.0,consultation,yes,na,na,na,yes,10,na,no,yes,na,na,20,yes,10,na,no
+p1-ru-026,ok,ok,True,50.63,40.0,-10.63,"needs, consultation, empathy, management",yes,no,na,5,yes,7,no,no,yes,na,na,10,no,4,no,no
+p1-ru-027,ok,ok,True,100.0,100.0,0.0,needs,yes,yes,na,20,yes,10,yes,no,yes,na,na,20,yes,10,yes,no
+p1-ru-028,ok,ok,True,100.0,100.0,0.0,needs,yes,yes,na,20,yes,10,yes,no,yes,na,na,20,yes,10,yes,no
+p1-ru-029,ok,ok,True,50.0,30.77,-19.23,"needs, closing, gross_error",no,yes,na,20,no,0,yes,no,no,na,na,20,no,0,no,yes
+p1-ru-030,ok,ok,True,100.0,100.0,0.0,needs,yes,yes,na,20,yes,10,yes,no,yes,na,na,20,yes,10,yes,no
+p4-ru-001,ok,ok,True,63.13,75.63,12.5,contact,no,yes,na,10,yes,7,no,no,yes,yes,na,10,yes,7,no,no
+p4-ru-002,ok,ok,True,75.0,81.88,6.88,"identity, consultation, management",yes,yes,no,15,yes,10,yes,no,yes,yes,na,10,yes,7,yes,no
+p4-ru-003,ok,ok,True,100.0,100.0,0.0,,yes,yes,yes,20,yes,10,yes,no,yes,yes,yes,20,yes,10,yes,no
+p4-ru-004,ok,ok,True,55.5,60.5,5.0,"contact, closing",no,yes,no,10,yes,7,yes,no,yes,yes,no,10,yes,7,no,no
+p4-ru-005,ok,ok,True,87.5,87.5,0.0,,no,yes,na,20,yes,10,yes,no,no,yes,na,20,yes,10,yes,no

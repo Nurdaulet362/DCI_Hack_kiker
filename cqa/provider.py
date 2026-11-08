@@ -88,6 +88,8 @@ class Provider:
             if c['reasoning_effort']: body['reasoning'] = {'effort': c['reasoning_effort']}
         elif c['provider'] == 'ollama':
             endpoint = '/api/chat'
+            # Ollama's constrained decoder does not replace a readable output contract.
+            messages[0]['content'] += '\nВерни JSON по этой схеме:\n' + json.dumps(schema, ensure_ascii=False)
             body = {'model': c['model'], 'messages': messages, 'stream': False,
                     'format': schema, 'options': {'temperature': 0, 'num_predict': c['max_output_tokens']}}
         else:

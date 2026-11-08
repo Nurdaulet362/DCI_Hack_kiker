@@ -1,0 +1,35 @@
+{
+  "limit_usd": 5,
+  "new_run": {
+    "instance_id": "qfgmz4d6e",
+    "instance_name": "dci-rerun-65-20261108",
+    "deletion_confirmed": true,
+    "start_utc": "2026-11-07T21:37:22.893903+00:00",
+    "delete_requested_utc": "2026-11-07T23:11:14.152923+00:00",
+    "deletion_confirmed_utc": "2026-11-07T23:11:46.432649+00:00",
+    "elapsed_minutes_including_provisioning": 94.39,
+    "hourly_rate_usd": 0.684,
+    "estimated_cost_usd": 1.0761,
+    "cost_if_rounded_to_whole_hours_usd": 1.368,
+    "billing_statement_verified": false,
+    "user_budget_usd": 5
+  },
+  "previous_run": {
+    "instance_id": "izsyw2lpo",
+    "instance_name": "dci-eval-10-20261108",
+    "deletion_confirmed": true,
+    "start_utc": "2026-11-07T20:18:05.819553+00:00",
+    "delete_requested_utc": "2026-11-07T21:08:59.595466+00:00",
+    "deletion_confirmed_utc": "2026-11-07T21:09:43.713423+00:00",
+    "elapsed_minutes_including_provisioning": 51.63,
+    "hourly_rate_usd": 0.6,
+    "estimated_cost_usd": 0.5163,
+    "cost_if_rounded_to_whole_hours_usd": 0.6,
+    "billing_statement_verified": false,
+    "user_budget_usd": 5
+  },
+  "combined_estimated_cost_usd": 1.5924,
+  "combined_cost_if_each_rental_rounded_to_hours_usd": 1.968,
+  "billing_statement_verified": false,
+  "note": "New rental includes all probes, cancelled candidate, final65, setup, idle time and deletion."
+}

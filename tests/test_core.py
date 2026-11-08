@@ -9,6 +9,7 @@ from cqa.domain import calculate, normalize_conversation, validate_assessment, v
 from cqa.evaluator import evaluate, response_schema
 from cqa.settings import ROOT
 from cqa.storage import Store
+from cqa.quality import contract_for
 
 
 CHECKLIST = json.loads((ROOT / 'config/default_checklist.json').read_text())
@@ -28,6 +29,14 @@ def assessment(checklist=CHECKLIST):
             'support_type': 'observed', 'checked_start': 'm0001', 'checked_end': 'm0002',
             'evidence': [{'message_id': 'm0001', 'quote': 'Здравствуйте!'}]}
     result['criteria']['gross_error']['answer'] = 'no'
+    for c in checklist['criteria']:
+        contract = contract_for(c)
+        if contract:
+            result['criteria'][c['id']]['checks'] = {
+                key: {'state': 'absent' if contract['aggregation'] == 'any' or key == 'enough_initial' else 'present',
+                      'reason': 'Синтетический факт для теста протокола, не языковая разметка.',
+                      'evidence': [{'message_id': 'm0001', 'quote': 'Здравствуйте!'}]}
+                for key in contract['checks']}
     return result
 
 
@@ -111,6 +120,7 @@ class CoreTests(unittest.TestCase):
         invalid['criteria']['contact']['evidence'][0]['quote'] = 'Invented'
         revised = copy.deepcopy(draft)
         revised['criteria']['contact']['answer'] = 'no'
+        revised['criteria']['contact']['checks']['introduction']['state'] = 'absent'
         class FakeProvider:
             cfg = {'model': 'fixture', 'provider': 'unit-test'}
             def __init__(self): self.values = iter([invalid, draft, revised])

@@ -9,6 +9,7 @@ from cqa.benchmark import compare
 from cqa.datasets import fetch_dataset
 from cqa.domain import choices, digest, validate_assessment, calculate
 from cqa.evaluator import evaluate, experiment_config
+from cqa.quality import validate_proofs
 from cqa.provider import Provider, ProviderError
 from cqa.settings import ROOT
 from cqa.storage import Store
@@ -46,6 +47,7 @@ def reusable_result(record, conversation, checklist, experiment):
             if key in record and digest(record[key]) != digest(expected):
                 return False
         assessment = validate_assessment(record.get('assessment'), checklist, conversation)
+        validate_proofs(assessment, checklist, conversation)
         recalculated = calculate(checklist, assessment)
         return isinstance(record.get('score'), dict) and digest(record['score']) == digest(recalculated)
     except (ValueError, TypeError, KeyError, AttributeError):

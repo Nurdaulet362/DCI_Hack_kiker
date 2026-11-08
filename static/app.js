@@ -83,6 +83,12 @@ async function refresh() {
   if(job) {renderJob(job);if(activeStatuses.includes(job.status)) resumePolling(job.id);}
 }
 function criterionChoices(c) { return (c.kind==='scale' ? c.levels.map(l=>String(l.value)) : ['yes','no']).concat(c.allow_na ? ['na'] : []); }
+function renderProofChecks(checks) {
+  if (!checks || !Object.keys(checks).length) return '';
+  const labels={greeting:'Приветствие',introduction:'Представление',enough_initial:'Данных хватало с начала',clarified_before_answer:'Уточнение до ответа',opportunity:'Возможность завершить',summary_or_help:'Итог или дальнейшая помощь',farewell:'Прощание оператора',insult:'Оскорбление',private_paid_offer:'Частная платная услуга',confidential_disclosure:'Раскрытие конфиденциальных данных'};
+  const states={present:'Подтверждено',absent:'Не обнаружено',uncertain:'Неясно — нужна проверка'};
+  return `<details class="result-provenance"><summary>Проверка отдельных фактов AI</summary><p class="small-note">Цитаты и роли проверены сервером. Правильность трактовки текста требует проверки экспертом.</p>${Object.entries(checks).map(([key,p])=>`<div><strong>${escapeHtml(labels[key]||key)}: ${escapeHtml(states[p.state]||p.state)}</strong><p>${escapeHtml(p.reason)}</p>${p.evidence.map(v=>`<button class="evidence" data-evidence="${escapeHtml(v.message_id)}"><span>↗ ${escapeHtml(v.message_id)}</span>«${escapeHtml(v.quote)}»</button>`).join('')}</div>`).join('')}</details>`;
+}
 function renderResult(e) {
   if (!e) return `<div class="empty compact"><span class="empty-icon">◇</span><h2>Оценка ещё не запускалась</h2><p>AI проверит критерии и укажет реплики, на которых основан каждый вывод.</p>${!state.ai.ready?'<button id="connectFromDetail">Подключить AI</button>':''}</div>`;
   const score=e.final_score, a=e.final_assessment;
@@ -93,6 +99,7 @@ function renderResult(e) {
     const tone=badgeTone(c,r.answer);
     return `<article class="criterion"><div class="criterion-top"><h3>${String(i+1).padStart(2,'0')} / ${escapeHtml(c.title)}</h3><span class="badge ${tone}">${escapeHtml(answerLabel(r.answer))}${c.kind==='scale'&&r.answer!=='na'?` / ${fmt(Math.max(...c.levels.map(l=>l.value)))}`:''}</span></div><p class="reason">${escapeHtml(r.reason)}</p>${r.reviewer_reason?`<div class="notice">Проверяющий: ${escapeHtml(r.reviewer_reason)}<br>Исходный ответ AI: ${escapeHtml(answerLabel(original.answer))}</div>`:''}<div class="criterion-meta">${c.kind==='flag'?'Отдельный флаг, без баллов':`${fmt(points.points)} из ${fmt(points.effective_weight)} баллов · исходный вес ${fmt(c.weight)}`}</div>
     ${r.evidence.map(v=>`<button class="evidence" data-evidence="${escapeHtml(v.message_id)}"><span>↗ ${escapeHtml(v.message_id)} · ${escapeHtml(({observed:'Действие',absence:'Проверенный контекст',not_applicable:'Основание N/A'})[r.support_type])}</span>«${escapeHtml(v.quote)}»</button>`).join('')}
+    ${renderProofChecks(original.checks)}
     <p class="small-note">Проверен участок ${escapeHtml(r.checked_start)}–${escapeHtml(r.checked_end)} · уверенность AI ${Math.round(r.confidence*100)}% (самооценка)</p>
     ${open?`<span class="badge warn">Апелляция на рассмотрении</span> <button class="text-button" data-resolve="${escapeHtml(open.id)}">Рассмотреть</button>`:`<button class="text-button" data-appeal="${escapeHtml(c.id)}">Оспорить оценку</button>`}</article>`; }).join('')}
   <details class="result-provenance"><summary>Модель, время и история проверки</summary><div>${escapeHtml(e.provider)} / ${escapeHtml(e.model)} · ${e.reviewed?'с повторной проверкой':'один проход'}<br>${e.usage.calls} вызовов · ${e.usage.input_tokens+e.usage.output_tokens} токенов · ${fmt(e.usage.seconds)} сек. · стоимость ${e.usage.cost==null?'не задана':fmt(e.usage.cost)+' USD'}<br>Изменено при повторной проверке: ${e.review_changes.length}<br>Исходный итог AI: ${fmt(e.score.total)} · Правила: ${escapeHtml(e.prompt_version)}<br>SHA-256 транскрипта: ${escapeHtml(e.transcript_hash.slice(0,16))}…<br>${escapeHtml(new Date(e.created).toLocaleString('ru'))}</div></details>`;

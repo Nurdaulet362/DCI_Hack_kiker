@@ -1,0 +1,26 @@
+{
+  "protocol": "fbroker-control-v1-uniform-proof-identity",
+  "model": "qwen3:30b",
+  "model_digest": "ad815644918f0eaab341c12b67837cc6dd4562342cdaf118f83d5d554cb37226",
+  "ollama_version_used": "0.40.15",
+  "sha256": {
+    "retry_errors.py": "58222524fb50472fa2a1021c897ee2c69ca788c3150b911b1ed1530453db5ac0",
+    "run.py": "e8845e6fb380da6c79dcb2cf33922bb887fe7554ab35f65629c7f2c80a707041",
+    "retry_consistency.py": "d95965c192d056cd896c593aeef8866b443e7c53b69eb3d9213b15782d51a18b",
+    "run_control.py": "4894f206d1cb41b86f0ba38b10d2fa08a4bddafac6d5e48adfd3c11bb06ab59d",
+    "config/default_checklist.json": "4b14c4884699174011c675a77b095589b027fb14378ba216f590f3c7e50a55d9",
+    "cqa/benchmark.py": "b1305df9b4f3efb1808dbec5f7a35c023144917e9bf8f9f161a2188b31eedd2b",
+    "cqa/provider.py": "fc9cab066667725afc7d76bab8563678773ad781fbbe6fbaaa155799070e9ddd",
+    "cqa/domain.py": "0345285056ff28315b6a47f1c55461d7d6f4767fe8d8887bcd10331d14817d8c",
+    "cqa/datasets.py": "2bd55e8e56255ff7f02cc479ddced5d3abf6fca5f35d13c59cd84da8d3afbbd7",
+    "cqa/__init__.py": "dc48ea528c67e50aeadbe83bb5a9f744188936994ffd15fc6bf43e4536ca788c",
+    "cqa/proof_contracts.json": "10c6746ca3a3ca9db679f59c4a1c2fc201adf98ea064356b0077031c69ec27fd",
+    "cqa/routing.py": "4a767eed9adeda5d2c61f8ced5bedb1d74000c0c1b0ddc8cc19cb20d3c6fc9b2",
+    "cqa/storage.py": "8df7c83a0a58c0b3cb3d23b06b7353fda6127b788d2d4d9b5fb5089f3ea9970f",
+    "cqa/network.py": "33621f228d04e56b986611994864de5ac1a2aa27d09b40d6fde2a703a7bd1b99",
+    "cqa/settings.py": "3bbfeb11cfc931f5a21e8c5750b7cd62cdcb3bf51a1d265c12f9f837e6cb19e6",
+    "cqa/quality.py": "b757c42d0ca610f5c2e43743144ed004c4138d2e0bc3ee5e5d16c960f13a1017",
+    "cqa/evaluator.py": "5bd9c6383e86b427040f1c27ba5752e827012baaf1e9dc22d795198004cd9ff0"
+  },
+  "core_commit": "86e586c6754c10dcedf37521a5c80d093a73f665"
+}

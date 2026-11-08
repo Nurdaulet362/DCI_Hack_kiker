@@ -11,10 +11,11 @@ SWAP сохраняется отдельно в приватных исходн�
 
 ## Экспорт реальных оценок
 
-Запускайте из корня проекта. Пути `data/control/*` ниже — пример расположения приватных входов; подставьте фактические файлы своего запуска.
+Запускайте из корня проекта. Для точного PROD-экспорта передайте `--project data/control/core`: это приватная копия `cqa/` и `config/` из commit `86e586c6754c10dcedf37521a5c80d093a73f665`, извлечённая командой `git archive` по инструкции [контрольного runner](../scripts/control_runner/README.md). Так сохраняются последующие изменения `main`, а экспорт использует фактическую контрольную версию. Пути `data/control/*` ниже — пример расположения приватных входов; подставьте фактические файлы своего запуска.
 
 ```sh
 python3 scripts/export_submission.py \
+  --project data/control/core \
   --source data/control/fbroker.json \
   --predictions data/control/predictions.json \
   --checklist data/control/checklist.json \
@@ -26,12 +27,13 @@ python3 scripts/export_submission.py \
 
 `--source` — исходный ответ API или массив исходных диалогов. `--predictions` — сохранённые реальные оценки приложения. `--checklist` — точный снимок чек-листа этого запуска, включая его метаданные: проверяются хеши, поэтому другой файл с похожим содержимым не подходит.
 
-Имя модели определяется по реальным метаданным оценок. `local` обозначает самостоятельно запущенную модель, например Qwen через Ollama на арендованном GPU; `external_api` — внешний AI API; `hybrid` — смешанный способ. Если все попытки завершились ошибкой, укажите `--model-name` с действительно использованной моделью. Для DEV используйте соответствующие исходные файлы, `--count 65` и `--output results/dev/results.json`.
+Имя модели определяется по реальным метаданным оценок. `local` обозначает самостоятельно запущенную модель, например Qwen через Ollama на арендованном GPU; `external_api` — внешний AI API; `hybrid` — смешанный способ. Если все попытки завершились ошибкой, укажите `--model-name` с действительно использованной моделью. Для DEV используйте ядро и соответствующие исходные файлы DEV-запуска, `--count 65` и `--output results/dev/results.json`.
 
 ## Проверка перед отправкой
 
 ```sh
 python3 scripts/export_submission.py \
+  --project data/control/core \
   --source data/control/fbroker.json \
   --validate results/prod/results.json \
   --count 10

@@ -1,0 +1,151 @@
+{
+  "team_name": "DCI_Hack_kiker",
+  "dataset_group_id": "FBroker",
+  "completed_utc": "2026-11-08T06:35:51.438876+00:00",
+  "model": {
+    "mode": "local",
+    "name": "qwen3:30b",
+    "digest": "ad815644918f0eaab341c12b67837cc6dd4562342cdaf118f83d5d554cb37226",
+    "quantization": "Q4_K_M",
+    "ollama_version": "0.40.15",
+    "gpu": "NVIDIA RTX A6000 48GB",
+    "temperature": 0,
+    "think": false,
+    "context_length": 32768,
+    "max_output_tokens": 8192
+  },
+  "core_commit": "86e586c6754c10dcedf37521a5c80d093a73f665",
+  "prompt_version": "cqa-1.3-adaptive-review+fbroker-control-v1-uniform-proof-identity",
+  "metrics": {
+    "dialogues": 10,
+    "successes": 10,
+    "calls": 19,
+    "reviews": 8,
+    "repair_calls": 1,
+    "review_disagreements": 2,
+    "initial_invalid_responses": 1,
+    "request_errors": 0,
+    "input_tokens": 198257,
+    "output_tokens": 89503,
+    "inference_wall_seconds": 776.86,
+    "mean_dialogue_seconds": 77.67,
+    "start_utc": "2026-11-08T06:22:54.583650+00:00",
+    "end_utc": "2026-11-08T06:35:51.438876+00:00",
+    "scores": [
+      {
+        "id": "p2-ru-001",
+        "score": 93.75,
+        "critical": false,
+        "calls": 2,
+        "review_changes": []
+      },
+      {
+        "id": "p2-ru-002",
+        "score": 93.75,
+        "critical": false,
+        "calls": 2,
+        "review_changes": []
+      },
+      {
+        "id": "p2-ru-003",
+        "score": 100.0,
+        "critical": false,
+        "calls": 3,
+        "review_changes": [
+          "identity",
+          "consultation",
+          "closing"
+        ]
+      },
+      {
+        "id": "p2-ru-004",
+        "score": 83.33,
+        "critical": false,
+        "calls": 2,
+        "review_changes": [
+          "consultation",
+          "empathy",
+          "management",
+          "closing"
+        ]
+      },
+      {
+        "id": "p2-kz-001",
+        "score": 100.0,
+        "critical": false,
+        "calls": 2,
+        "review_changes": []
+      },
+      {
+        "id": "p2-kz-002",
+        "score": 100.0,
+        "critical": false,
+        "calls": 2,
+        "review_changes": []
+      },
+      {
+        "id": "p2-kz-003",
+        "score": 93.75,
+        "critical": false,
+        "calls": 2,
+        "review_changes": []
+      },
+      {
+        "id": "p2-kz-004",
+        "score": 100.0,
+        "critical": false,
+        "calls": 2,
+        "review_changes": []
+      },
+      {
+        "id": "p2-en-001",
+        "score": 100.0,
+        "critical": false,
+        "calls": 1,
+        "review_changes": []
+      },
+      {
+        "id": "p2-en-002",
+        "score": 100.0,
+        "critical": false,
+        "calls": 1,
+        "review_changes": []
+      }
+    ]
+  },
+  "hashes": {
+    "FBroker-source.json": "1c92484f3a59c7cc1215954389d6efd3dd993d80d835a7377ba32b4efb5bb9e9",
+    "predictions.json": "e2d695c1cbd1c5d41e8bbc57c0323366213feebde08423262d9d3efb4f555b8a",
+    "consistency-trace.jsonl": "c341a6f178bb971622c09261e25492cb2f2b962e255c23b096c007addf83b27e",
+    "manifest.json": "3c7139b6692a2615409222d455e244a8db49c90f881cc361906eb24ae656da1c",
+    "experiment.json": "916f4c86571d03b2de6e05dc2f73ffa3f2b73ca82556b64911c5bacb8c181ce4"
+  },
+  "official_results_sha256": "843e4e561e6abf4af45f93386052a0c1212408592564058ef12bbe67d98a982a",
+  "budget": {
+    "current_run": {
+      "instance_id": "gace1dkee",
+      "instance_name": "dci-control-10-20261108",
+      "deletion_confirmed": true,
+      "start_utc": "2026-11-08T06:14:37.515376+00:00",
+      "delete_requested_utc": "2026-11-08T06:36:50.333751+00:00",
+      "deletion_confirmed_utc": "2026-11-08T06:37:38.024097+00:00",
+      "elapsed_minutes_including_provisioning": 23.01,
+      "hourly_rate_usd": 0.6,
+      "estimated_cost_usd": 0.2301,
+      "cost_if_rounded_to_whole_hours_usd": 0.6,
+      "billing_statement_verified": false,
+      "user_budget_usd": 5
+    },
+    "prior_estimated_usd": 1.5924,
+    "all_three_estimated_usd": 1.8225,
+    "all_three_if_rounded_to_whole_hours_usd": 2.568,
+    "billing_statement_verified": false
+  },
+  "swap": {
+    "saved_records": 3,
+    "evaluated_records": 0,
+    "included_in_prod": 0
+  },
+  "ground_truth_available": false,
+  "answers_manually_changed": false
+}

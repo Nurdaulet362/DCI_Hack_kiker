@@ -59,7 +59,8 @@ class Provider:
     def __init__(self):
         self.cfg = config()
         if not self.cfg['ready']:
-            raise ProviderError('AI не настроен. Заполните AI_PROVIDER, AI_BASE_URL, AI_MODEL и AI_API_KEY в .env и перезапустите сервер.')
+            key_hint = '' if self.cfg['provider'] == 'ollama' else ' и AI_API_KEY'
+            raise ProviderError(f'AI не настроен. Заполните AI_PROVIDER, AI_BASE_URL, AI_MODEL{key_hint} в .env и перезапустите сервер.')
         if self.cfg['provider'] not in ['openai', 'openai_compatible', 'ollama']:
             raise ProviderError('Поддерживаются openai, openai_compatible и ollama.')
         if self.cfg['reasoning_effort'] not in ['', 'none', 'minimal', 'low', 'medium', 'high']:

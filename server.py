@@ -40,7 +40,7 @@ class App:
         self.pool = ThreadPoolExecutor(max_workers=1)
         dev = ROOT / 'data/dev.json'
         if not self.store.conversations() and dev.exists():
-            self.store.import_records(json.loads(dev.read_text()))
+            self.store.import_records(json.loads(dev.read_text(encoding='utf-8')))
 
     def update(self, jid, **values):
         with self.lock:

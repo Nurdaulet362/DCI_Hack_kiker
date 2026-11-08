@@ -89,7 +89,7 @@ class MeasurementTests(unittest.TestCase):
             path = Path(d)/'results.json'
             write_private_json(path, [{'conversation_id': 'one'}])
             with self.assertRaises(ValueError): write_private_json(path, {'bad': float('nan')})
-            self.assertEqual(json.loads(path.read_text()), [{'conversation_id': 'one'}])
+            self.assertEqual(json.loads(path.read_text(encoding='utf-8')), [{'conversation_id': 'one'}])
             if os.name == 'posix': self.assertEqual(stat.S_IMODE(path.stat().st_mode), 0o600)
             self.assertEqual(len(list(Path(d).iterdir())), 1)
 

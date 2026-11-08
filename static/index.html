@@ -19,12 +19,13 @@
 <footer><span>CQA / FREEDOM BROKER</span><span>Доказательства. Прозрачные правила. Осмысленная оценка.</span></footer>
 </main></div>
 <dialog id="importDialog"><form id="importForm"><div class="dialog-heading"><h2>Добавить диалоги</h2><button type="button" data-close="importDialog" aria-label="Закрыть">×</button></div><p>Загрузите DEV или контрольный набор из API организаторов.</p><label class="field">Группа набора<input id="groupId" value="DEV" required maxlength="100"></label><button class="primary" id="fetchBtn">Получить из API</button><div class="divider">ИЛИ JSON-ФАЙЛ</div><label class="field">Ответ API, массив диалогов или один диалог<input type="file" id="importFile" accept=".json,application/json"></label><p class="muted">Формат: conversation_id, language (RU/KZ/EN), channel, transcript [{timestamp, speaker, text}], audio_url. Замена ID обновляет транскрипт, сохраняя историю оценок.</p></form></dialog>
-<dialog id="configDialog"><div class="dialog-heading"><h2>Подключение AI</h2><button data-close="configDialog" aria-label="Закрыть">×</button></div><div id="configInfo"></div><p>Настройки применяются после перезапуска сервера. Успешный запрос подтверждает доступность API только на момент вызова.</p><p>Откройте локальный <code>.env</code> в папке проекта, заполните настройки провайдера и перезапустите сервер:</p><pre>AI_PROVIDER=openai_compatible
-AI_BASE_URL=https://generativelanguage.googleapis.com/v1beta/openai
-AI_MODEL=gemini-3.8-flash
-AI_REASONING_EFFORT=low
-AI_API_KEY=ваш-ключ
-AI_REVIEW=true</pre><p class="muted">Для OpenAI: AI_PROVIDER=openai. Для локальной модели: AI_PROVIDER=ollama, AI_BASE_URL=http://127.0.0.1:11434. Ключ остаётся на сервере. API должен поддерживать JSON Schema.</p><p>Точность относительно Ground Truth ещё не измерена. Уверенность модели в результате — её самооценка.</p></dialog>
+<dialog id="configDialog"><div class="dialog-heading"><h2>Подключение AI</h2><button data-close="configDialog" aria-label="Закрыть">×</button></div><div id="configInfo"></div><p>Настройки применяются после перезапуска сервера. Успешный запрос подтверждает доступность API только на момент вызова.</p><p>Откройте локальный <code>.env</code> в папке проекта, заполните настройки провайдера и перезапустите сервер:</p><pre>AI_PROVIDER=ollama
+AI_BASE_URL=http://127.0.0.1:11434
+AI_MODEL=qwen3:30b
+AI_API_KEY=
+AI_REVIEW=true
+AI_CONTEXT_WINDOW=32768
+AI_THINK=false</pre><p class="muted">Рабочий профиль: Ollama с Qwen3:30B на сервере NVIDIA/Brev. Для удалённого сервера используйте SSH port-forward к локальному порту 11434. Ключ для Ollama не нужен; сервер должен поддерживать JSON Schema.</p><p>Точность относительно Ground Truth ещё не измерена. Уверенность модели в результате — её самооценка.</p></dialog>
 <dialog id="appealDialog"><form id="appealForm"><div class="dialog-heading"><h2>Оспорить критерий</h2><button type="button" data-close="appealDialog" aria-label="Закрыть">×</button></div><p id="appealTitle"></p><label class="field">Что нужно пересмотреть?<textarea id="appealComment" required maxlength="5000" rows="5" placeholder="Объясните, какой фрагмент не учтён"></textarea></label><button class="primary">Сохранить апелляцию</button></form></dialog>
 <dialog id="resolveDialog"><form id="resolveForm"><div class="dialog-heading"><h2>Решение проверяющего</h2><button type="button" data-close="resolveDialog" aria-label="Закрыть">×</button></div><p id="resolveContext"></p><label class="field">Финальная оценка<select id="resolveAnswer"></select></label><label class="field">Основание решения<textarea id="resolveReason" required maxlength="5000" rows="4"></textarea></label><button class="primary">Сохранить решение</button></form></dialog>
 <div id="toast" role="status" class="toast hidden"></div>

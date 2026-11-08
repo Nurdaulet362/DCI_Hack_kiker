@@ -82,11 +82,11 @@ def main():
     bench = sub.add_parser('benchmark'); bench.add_argument('predictions', type=Path); bench.add_argument('ground_truth', type=Path)
     args = parser.parse_args()
     if args.command == 'benchmark':
-        print(json.dumps(compare(json.loads(args.predictions.read_text()), json.loads(args.ground_truth.read_text())), ensure_ascii=False, indent=2))
+        print(json.dumps(compare(json.loads(args.predictions.read_text(encoding='utf-8')), json.loads(args.ground_truth.read_text(encoding='utf-8'))), ensure_ascii=False, indent=2))
         return
     store = Store()
     if args.command in ['fetch', 'import']:
-        payload = fetch_dataset(args.group) if args.command == 'fetch' else json.loads(args.path.read_text())
+        payload = fetch_dataset(args.group) if args.command == 'fetch' else json.loads(args.path.read_text(encoding='utf-8'))
         count = store.import_records(payload)
         if args.command == 'fetch' and args.group == 'DEV':
             write_private_json(ROOT/'data/dev.json', payload)
@@ -115,7 +115,7 @@ def main():
         ids = args.id or [c['conversation_id'] for c in store.conversations()]
         if not args.id and not args.all: ids = ids[:max(1, args.limit)]
         if len(set(ids)) != len(ids): raise ValueError('Повторяющиеся ID в запросе.')
-        old = json.loads(args.output.read_text()) if args.output.exists() else []
+        old = json.loads(args.output.read_text(encoding='utf-8')) if args.output.exists() else []
         if not isinstance(old, list) or any(not isinstance(r, dict) or 'conversation_id' not in r for r in old):
             raise ValueError('Существующий --output имеет неверный формат. Выберите новый файл.')
         results = {r['conversation_id']: r for r in old}

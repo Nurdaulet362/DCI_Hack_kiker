@@ -7,7 +7,7 @@ import json
 from pathlib import Path
 
 CONTRACT_VERSION = 'proof-contracts-3-identity-semantics'
-CONTRACTS = json.loads((Path(__file__).with_name('proof_contracts.json')).read_text())
+CONTRACTS = json.loads((Path(__file__).with_name('proof_contracts.json')).read_text(encoding='utf-8'))
 
 # Explain the same logic that validate_proofs enforces. These are rubric mappings,
 # not labels for any specific transcript; changed rules receive no old mapping.
